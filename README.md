@@ -123,9 +123,8 @@ HE.onResize = function(){
 ```
 
 ### Performance Advice
-HE.onResize and HE.onScroll should be treated like loops, everything you trigger should be as lean as possible to keep your frame rates high. To reduce lag use the HE.win and HE.scroll variables to trigger animations instead of using them to animate frame by frame (example of bad practice: 'style', 'margin-top:' + HE.scroll.y + 'px'). Reduce lag further by using variables to determine if your code blocks need to fire on every iteration.
-
+HE.onResize and HE.onScroll should be treated like loops, everything you trigger should be as lean as possible to keep your frame rates high. To reduce lag use the HE.win and HE.scroll variables to trigger animations instead of using them to animate frame by frame, unless you're creating parallax effects.  (frame-by-frame example: 'style', 'margin-top: -' + HE.scroll.y + 'px'). Reduce lag further by using variables to determine if your code blocks need to fire on every iteration (ie. often once you've scrolled past a certain point the element you're targeting is out of view so don't alter that element needlessly.)
 
 ## Requirements
 While not properly tested, Helium should support IE9 and above.
-IE8+ can probably be supported via pollyfill code for requestAnimationFrame and addEventListener.
+IE8+ can probably be supported via polyfill code for [requestAnimationFrame](https://gist.github.com/paulirish/1579671) and [addEventListener](https://gist.github.com/eirikbacker/2864711).
