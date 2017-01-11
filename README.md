@@ -29,6 +29,7 @@ Helium JS is a simple and lightweight solution to implement your code on scroll 
 - Load the Helium code before your JS file
 
 Example:
+```html
 <body>
 	<!-- your content here -->
 
@@ -38,26 +39,33 @@ Example:
 	<!-- Your Javascript File -->
 	<script src="website.js"></script>
 </body>
+```
 
 ## Implementation
-#In your JS file, you can include the following code:
-
+**In your JS file, you can include the following code:**
+```javascript
 //Custom Events Implementation
 HE.onScroll = function(){console.log('You Scrolled'); };
 HE.onResize = function(){console.log('You Resized'); };
-
-#Two modernizr like tests have been included:
+```
+**Two modernizr like tests have been included:**
+```javascript
 He.capable; //allows you to load special modern browser resources
 HE.retina; //allows you to load special retina only resources
+```
 
-#You can see all of the data that Helium JS collects for using in IF statements
+**You can see all of the data that Helium JS collects for using in IF statements**
+```javascript
 console.log(HE.win); //browser window data
 console.log(HE.doc); //document data
 console.log(HE.mouse); //mouse movement data
 console.log(HE.scroll); //user scrolling data
+```
 
-#Helium uses the console to communicate but only if you ask it to:
+**Helium uses the console to communicate but only if you ask it to:**
+```javascript
 HE.dev = true; //only works with the .dev JS file
+```
 
 ## Requirements
 While not properly tested, Helium should support IE9 and above.
