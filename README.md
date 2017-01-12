@@ -1,5 +1,5 @@
 ## Helium JS
-Helium JS is a simple and lightweight solution to implement your code on scroll and resize events in a performant way without any dependencies. There isn't much you need to learn, the code is self initializing and collects data immediately. Helium JS is written in pure JS and is name spaced so it should be able to play nice with most other JS libraries.
+Helium JS is a simple and lightweight solution to implement your code on scroll and resize events in a performant way. There isn't much you need to learn, just initialize and go. Helium JS currently requires jQuery, but it should be able to play nice with most other JS libraries.
 
 ## Features
 - Detects Retina Devices
@@ -26,44 +26,31 @@ Helium JS is a simple and lightweight solution to implement your code on scroll 
 ## Get Started
 - Download the Repo.
 - Add the Helium JS file to your project
-- Load the Helium code before your JS file
-
-Example:
-```html
-<body>
-	<!-- your content here -->
-
-	<!-- Helium JS -->
-	<script src="helium.min.js"></script>
-
-	<!-- Your Javascript File -->
-	<script src="website.js"></script>
-</body>
-```
+- Load jQuery before Helium
+- Load Helium before your JS code
 
 ## Implementation
-**In your JS file, you can include the following code:**
+Helium JS is easy to use see the code below for quick implementation
+
+**Initialize Helium JS**
+```javascript
+HE.init();
+```
+
+**Custom Event Based Code**
 ```javascript
 //Custom Events Implementation
 HE.onScroll = function(){console.log('You Scrolled'); };
 HE.onResize = function(){console.log('You Resized'); };
 ```
 
-**Two modernizr like tests have been included:**
+**Detect Retina Displays or Capable Browsers**
 ```javascript
-if(HE.capable){
-	//Load special features that would break on old browsers
-}
-
-if(HE.retina){
-	//Load retina images
-} else {
-	//Load standard images
-}
+if(HE.capable){/*Load special features that would break on old browsers*/}
+if(HE.retina){/*Load retina images*/} else {/*Load standard images*/}
 ```
 
-
-**You can see all of the data that Helium JS collects for using in IF statements**
+**Access Helium's Collected Data in Console**
 ```javascript
 console.log(HE.win); //browser window data
 console.log(HE.doc); //document data
@@ -71,25 +58,24 @@ console.log(HE.mouse); //mouse movement data
 console.log(HE.scroll); //user scrolling data
 ```
 
-**Helium uses the console to communicate but only if you ask it to:**
+**Access Realtime Data Collection in Console**
 ```javascript
-HE.dev = true; //only works with the .dev JS file
+HE.dev = true;
 ```
+
+
 ## Examples
 **Hide element after Scrolling 200px Down for Desktop Devices**
 ```javascript
-var el = document.querySelectorAll('.element');
-//jQuery version: var el = $('.element');
-
 HE.onScroll = function(){
 	//if window is larger than 992px
 	if (HE.win.x > 992) {
 
 		//if window's Y Scroll value is larger than 199
 		if (HE.scroll.y > 199) {
-			el.style.display = 'none'; //jQuery version: el.hide();			
+			$('.element').hide();
 		} else {
-			el.style.display = ''; //jQuery version: el.show();
+			$('.element').show();
 		}
 	}
 };
@@ -99,7 +85,6 @@ HE.onScroll = function(){
 Let's load special image content for small devices.
 
 ```javascript
-var el = document.querySelectorAll('.element');
 var runJustOnce = true;
 
 //Custom onScroll Function
@@ -113,9 +98,9 @@ HE.onResize = function(){
 
 			//If screen is retina
 			if (HE.retina) {
-				el.setAttribute('style', 'background:url(image_x2.jpg)');
+				$('.element').setAttribute('style', 'background:url(image_x2.jpg)');
 			} else {
-				el.setAttribute('style', 'background:url(image.jpg)');
+				$('.element').setAttribute('style', 'background:url(image.jpg)');
 			}
 		}
 	}
