@@ -1,7 +1,7 @@
 {
 	"name": "Helium-JS",
-	"version": "0.1.0",
-	"description": "Helium JS is a very simple and lightweight solution for tracking window size/resize, document size/resize, scroll, and mouse position and more. The goal is to get out of your way so you can build interactive sites and apps with as little overhead as possible.",
+	"version": "0.1.1",
+	"description": "Helium JS is a very simple and lightweight solution for tracking window size/resize, document size/resize, scroll, and mouse position and more. The goal is to get out of your way so you can build interactive sites and apps with as little overhead as possible. (Requires jQuery)",
 	"main": "gulpfile.js",
 	"dependencies": {
 		"gulp": "^3.9.0",
