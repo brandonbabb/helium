@@ -273,17 +273,17 @@ var HE;
 		}
 	}
 
-	HE.init = function(disableMouseTracking, consoleMessages, elementMessages){
-		if(consoleMessages !== false){developmentLog = true;} //console Logs
-		if(elementMessages !== false){developmentElement = true;$("body").append("<ul id=\"HE\" style=\"position:fixed;bottom:0;left:0;background:rgba(0,0,0,.7);margin:0;padding:5px;color:#fff\"><li class=\"window\"></li><li class=\"document\"></li><li class=\"mouse\"></li></ul>");} //show element on screen with info
+	HE.init = function(allowMouseTracking, consoleMessages, elementMessages){
+		if(consoleMessages === true){developmentLog = true;} //console Logs
+		if(elementMessages === true){developmentElement = true;$("body").append("<ul id=\"HE\" style=\"position:fixed;bottom:0;left:0;background:rgba(0,0,0,.7);margin:0;padding:5px;color:#fff\"><li class=\"window\"></li><li class=\"document\"></li><li class=\"mouse\"></li></ul>");} //show element on screen with info
 		window.addEventListener("resize", resizeRequest, true);
 		window.addEventListener("resize", scrollRequest, true);
 		window.addEventListener("scroll", scrollRequest, true);
 		updateScroll();
 		updateWindow();
 
-		//if disableMouseTracking = true, disable mouse tracking
-		if(!disableMouseTracking){
+		//if allowMouseTracking === true, allow mouse tracking
+		if (allowMouseTracking === true) {
 			$body.mousemove(function(e){mouseRequest(e);});
 
 			//It"s currently impossible to know a mouse"s coordinates until it"s moved,

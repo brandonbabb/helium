@@ -250,15 +250,15 @@ var HE;
 		}
 	}
 
-	HE.init = function(disableMouseTracking){
+	HE.init = function(allowMouse){
 		window.addEventListener("resize", resizeRequest, true);
 		window.addEventListener("resize", scrollRequest, true);
 		window.addEventListener("scroll", scrollRequest, true);
 		updateScroll();
 		updateWindow();
 
-		//if disableMouseTracking = true, disable mouse tracking
-		if(!disableMouseTracking){
+		//if allowMouse === true, allow mouse tracking
+		if(allowMouseTracking === true){
 			$body.mousemove(function(e){mouseRequest(e);});
 
 			//It"s currently impossible to know a mouse"s coordinates until it"s moved,
