@@ -1,11 +1,12 @@
 /*!
- * Helium-JS v0.1.0 (https://github.com/brandonbabb/Helium-JS)
- * Copyright 2011-2017 The Helium Authors (https://github.com/brandonbabb/Helium-JS/graphs/contributors)
+ * Helium-JS v0.1.2 (https://github.com/brandonbabb/Helium-JS)
+ * Copyright 2017 The Helium Authors (https://github.com/brandonbabb/Helium-JS/graphs/contributors)
  * Licensed under MIT (https://github.com/brandonbabb/Helium-JS/blob/master/LICENSE)
  */
 //Global variable so your your code can interact with it
 var HE;
 (function($) {
+	"use strict";
 
 	//The following variables are private and exist to save resources
 	var $window = $(window),
@@ -42,33 +43,22 @@ var HE;
 		return false;
 	}
 
-	/* Request function calls if not busy running same function */
-	function scrollRequest() {if(!lockScrollUpdate) {lockScrollUpdate = true; requestAnimationFrame(updateScroll); }}
-	function resizeRequest() {if(!lockWindowUpdate){lockWindowUpdate = true; requestAnimationFrame(updateWindow); }}
-	function mouseRequest() {if(!lockMouseUpdate){lockMouseUpdate = true;	requestAnimationFrame(updateMouse); }}
-
 	/** var HE (Object) Public
 	 *  Desc: Helium JS global variable
 	 */
 	HE = {
-		dev: false, //use HE.dev = true; to see console messages
-
 			/* window (object) Public {
 					width (width of window in px),
 					height (height of window in px),
 					dirX (Direction/Inertia),
-					dirY (Direction/Inertia),
-					centerX (Middle Point of Screen X),
-					centerY (Middle Point of Screen Y),
+					dirY (Direction/Inertia)
 				},
 			*/
 			win: {
 				width: 0,
 				height: 0,
 				dirX: 0,
-				dirY: 0,
-				centerX: 0,
-				centerY: 0
+				dirY: 0
 			},
 
 			/*
@@ -110,29 +100,23 @@ var HE;
 			},
 
 			/* mouse (object) Public {
-				x (object) {
-					px (Current Value in px),
-					quad (quadrant; 0 = left half of screen, 1 - right half of screen),
-					dir (Direction and Inertia, positive = right, negative = left)
-				},
-				y (object) {
-					px (Current Value in px),
-					quad (quadrant; 0 = top half of screen, 1 - bototm half of screen),
-					dir (direction and inertia, positive = up, negative = down)
-				}
+				x (Current Value in px of window),
+				y (Current Value in px of window),
+				dirX (Direction and Inertia, positive = right, negative = left),
+				dirY (direction and inertia, positive = up, negative = down),
+				docX (Current Value in px of window),
+				docY (Current Value in px of document),
+				target (selector for object mouse is pointed at)
 			}
 			*/
 			mouse: {
-				x : {
-					px: 0,
-					quad: 0,
-					dir: 0
-				},
-				y: {
-					px: 0,
-					quad: 0,
-					dir: 0
-				}
+				x : 0,
+				y : 0,
+				dirX: -1,
+				dirY: -1,
+				docX: 0,
+				docY: 0,
+				target: {} //jQuery Selection Object ie. $("target")
 			},
 
 			retina: retinaTest(),
@@ -141,30 +125,7 @@ var HE;
 			//Basic functions to be rewritten by user
 			onScroll: function(){},
 			onResize: function(){},
-			onMouseMove: function(){},
-
-			//Initiallize Helium JS in your project
-			init: function() {
-				window.addEventListener("resize", resizeRequest, true);
-				window.addEventListener("scroll", scrollRequest, true);
-				window.addEventListener("resize", scrollRequest, true);
-				$body.mousemove(function(e){
-					HE.mouse.x.px = e.pageX;
-					HE.mouse.y.px = e.pageY;
-					mouseRequest();
-				});
-
-				//Run functions immediately
-				updateScroll();
-				updateWindow();
-
-				//It"s currently impossible to know a mouse"s coordinates until it"s moved,
-				//it"s more likely to be somewhere in the middle of the window
-				//vs the very top left pixel of the screen.
-				//http://stackoverflow.com/questions/2601097/how-to-get-the-mouse-position-without-events-without-moving-the-mouse
-				HE.mouse.x.px = HE.view.centerX;
-				HE.mouse.y.px = HE.view.centerY;
-			}
+			onMouseMove: function(){}
 	};
 
 
@@ -179,31 +140,51 @@ var HE;
 		HE.doc.width = $document.width();
 		HE.doc.height = $document.outerHeight();
 
-		//Help for development
-		if(HE.dev === true){
-			console.log("HE.win (browser size) [width:" + HE.win.width + "(px), height: " + HE.win.height + "(px), centerX:" + HE.win.centerX + "(px), centerY" + HE.win.centerY + "(px)]");
-			console.log("HE.doc (page size) [width:" + HE.doc.width + "(px), height:" + HE.doc.height + "(px)]");
-			if(!firstRun){console.log("HE.win [dirX:" + HE.win.dirX + ", dirY:" + HE.win.dirY + "]"); }
-		}
-
 		//Save resources unless changes
 		if(HE.win.width !== cachedWidth){
-			if(!firstRun){HE.win.dirX = HE.win.width - cachedWidth; } //Difference X
+			if(!firstRun){
+				HE.win.dirX = HE.win.width - cachedWidth;
+			}
+				 //Difference X
 			cachedWidth = HE.win.width; //Set Cache
-			HE.win.centerX = HE.win.width / 2; //centerX
 			scrollableX = HE.doc.width - HE.win.width; //Document Scrollable?
+		} else {
+			HE.win.dirX = 0;
 		}
 
 		if(HE.win.height !== cachedHeight){
 			if(!firstRun){HE.win.dirY = HE.win.height - cachedHeight; } //Difference Y
 			cachedHeight = HE.win.height; //Set Cache
-			HE.win.centerY = HE.win.height / 2; //centerY
 			scrollableY = HE.doc.height - HE.win.height; //Document Scrollable?
+		} else {
+			HE.win.dirY = 0;
 		}
 
 		HE.onResize(); //Run User"s Code
-		firstRun = false; //Initial values are set
 		lockWindowUpdate = false; //Unlock function to be able to run again
+	}
+
+	/** updateMouse (function) Private
+	 *	This function calculates mouse coordinates, it is called when the mouse is moved by the user
+	 *  For performance reasons, it is only called with requestAnimationFrame and only if it isn"t already running
+	 */
+	function updateMouse() {
+		//Save resources if possible
+		if (cachedMouseY !== HE.mouse.y) {
+			if (!firstRun) {HE.mouse.dirY = (HE.mouse.y - cachedMouseY)/100; } //Direction
+			HE.mouse.winY = HE.mouse.y - HE.scroll.x.px; //Return coordinates of window, not document
+			cachedMouseY = HE.mouse.y; //Reset Cache
+		}
+
+		//Save resources if possible
+		if (cachedMouseX !== HE.mouse.x) {
+			if (!firstRun) {HE.mouse.dirX = (HE.mouse.x - cachedMouseX)/100; } //Direction
+			HE.mouse.winY = HE.mouse.y - HE.scroll.y.px; //Return coordinates of window, not document
+			cachedMouseX = HE.mouse.x; //Reset Cache
+		}
+
+		HE.onMouseMove(); //Run User"s Code
+		lockMouseUpdate = false; //Unlock function to be able to run again
 	}
 
 	/** updateScroll (function) Private
@@ -214,11 +195,6 @@ var HE;
 		//Perform calculations about current position in website
 		HE.scroll.x.px = window.pageXOffset;
 		HE.scroll.y.px = window.pageYOffset;
-
-		//Help for development
-		if (HE.dev === true) {
-			console.log("Scroll (x:" + HE.scroll.x.px + " (" + (HE.scroll.x.percent).toPrecision(1)  + ", " + HE.scroll.x.dir.toPrecision(1) + "), y:" + HE.scroll.y.px + " (" + (HE.scroll.y.percent).toPrecision(1)  + ", " + HE.scroll.y.dir.toPrecision(1) + ")" + "Cache: "+cachedScrollX +","+cachedScrollY);
-		}
 
 		//Save resources if possible
 		if (cachedScrollY !== HE.scroll.y.px) {
@@ -246,30 +222,51 @@ var HE;
 			}
 		}
 
-		/** updateMouse (function) Private
-		 *	This function calculates mouse coordinates, it is called when the mouse is moved by the user
-		 *  For performance reasons, it is only called with requestAnimationFrame and only if it isn"t already running
-		 */
-		function updateMouse() {
-			//Perform calculations about current position in website
-			HE.mouse.x.px = window.pageXOffset;
-			HE.mouse.y.px = window.pageYOffset;
+		HE.onScroll(); //Run User"s Code
+		lockScrollUpdate = false; //Unlock function to be able to run again
+	}
 
-			//Save resources if possible
-			if (cachedMouseY !== HE.mouse.y.px) {
-				if (!firstRun) {HE.mouse.y.dir = HE.mouse.y.px - cachedMouseY; } //Direction
-				cachedMouseY = HE.mouse.y.px; //Reset Cache
+	/* Request function calls if not busy running same function */
+	function scrollRequest() {if(!lockScrollUpdate) {lockScrollUpdate = true; requestAnimationFrame(updateScroll); }}
+	function resizeRequest() {if(!lockWindowUpdate){lockWindowUpdate = true; requestAnimationFrame(updateWindow); }}
+	function mouseRequest(e) {
+		if(!lockMouseUpdate){
+			lockMouseUpdate = true;
+			HE.mouse.docX = e.pageX;
+			HE.mouse.docY = e.pageY;
+			HE.mouse.x = e.screenX;
+			HE.mouse.y = e.screenY;
+
+			//Get best possible target selector as string
+			if (e.target.id) {
+				HE.mouse.target = "#" + e.target.id;
+			} else if (e.target.className){
+				HE.mouse.target = "." + e.target.className;
+			} else {
+				HE.mouse.target = "body";
 			}
 
-			//Save resources if possible
-			if (cachedMouseX !== HE.mouse.x.px) {
-				if (!firstRun) {HE.mouse.x.dir = HE.mouse.x.px - cachedMouseX; } //Direction
-				cachedMouseX = HE.mouse.x.px; //Reset Cache
-			}
-
-			HE.onMouseMove(); //Run User"s Code
-			firstRun = false; //Initial values are set
-			lockScrollUpdate = false; //Unlock function to be able to run again
+			requestAnimationFrame(updateMouse);
 		}
 	}
+
+	HE.init = function(disableMouseTracking){
+		window.addEventListener("resize", resizeRequest, true);
+		window.addEventListener("resize", scrollRequest, true);
+		window.addEventListener("scroll", scrollRequest, true);
+		updateScroll();
+		updateWindow();
+
+		//if disableMouseTracking = true, disable mouse tracking
+		if(!disableMouseTracking){
+			$body.mousemove(function(e){mouseRequest(e);});
+
+			//It"s currently impossible to know a mouse"s coordinates until it"s moved,
+			//it"s more likely to be somewhere in the middle of the window
+			//vs the very top left pixel of the screen.
+			//http://stackoverflow.com/questions/2601097/how-to-get-the-mouse-position-without-events-without-moving-the-mouse
+			mouseRequest({pageX: HE.win.width / 2,pageY: HE.win.height / 2,screenX: HE.win.width / 2,screenY: HE.win.height / 2,target: "body"});
+		}
+		firstRun = false; //Initial values are set
+	};
 }(jQuery));
