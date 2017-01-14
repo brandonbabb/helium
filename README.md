@@ -37,6 +37,7 @@ When it's time to launch your website you can use the lighter production version
 Helium JS is easy to use see the code below for quick implementation
 
 **Initialize Helium JS**
+
 Getting started is simple, just invoke the init function like this:
 ```javascript
 HE.init();
@@ -82,6 +83,7 @@ if (HE.detect.retina) {
 ```
 
 **Access Helium's Collected Data in the Browser's Console**
+
 Because the Helium variable is a public variable you can refer to it in your code, you can poke and prod and use any of the data collected.
 ```javascript
 console.log(HE); // See everything
@@ -92,6 +94,7 @@ console.log(HE.scroll); // User scrolling data
 
 ## Code Examples
 **Load Different Images for Small Retina and Non-Retina Screens**
+
 Let's load content for only smaller devices. Some users have a high DPI device so let's load higher quality images for them.
 ```javascript
 HE.init(); // Start Helium
@@ -109,6 +112,7 @@ if (HE.size.win.x < 992) {
 ```
 
 **Show an Element After Scrolling 200px Down the Page**
+
 You can trigger hiding or showing an element anytime the user scrolls, the example below hides an element only for desktop devices where a user has scrolled 200px or more down the page:
 ```javascript
 // Your code here
@@ -146,6 +150,7 @@ The .onScroll function can run hundreds of times per second so it's a good idea 
 
 
 **Simple Parallax**
+
 Helium can help with simple parallax effects without a full blown library.
 ```javascript
 HE.init(); // Start Helium
@@ -173,8 +178,8 @@ HE.onResize and HE.onScroll should be treated like loops, everything you trigger
 - Consider moving code outside of HE.onResize() and HE.onScroll() functions if possible especially if the code only runs once.
 
 ## Requirements
-[jQuery](http://jquery.com/download/)
-requestAnimationFrame support is required [requestAnimationFrame polyfill](https://gist.github.com/paulirish/1579671)
-IE8 can be supported with a [addEventListener polyfill](https://gist.github.com/eirikbacker/2864711)
+- [jQuery](http://jquery.com/download/)
+- requestAnimationFrame support is required [requestAnimationFrame polyfill](https://gist.github.com/paulirish/1579671)
+- IE8 can be supported with a [addEventListener polyfill](https://gist.github.com/eirikbacker/2864711)
 
 Helium hasn't been tested in every possible environment, [if your encounter a bug, please mark it down!](https://github.com/brandonbabb/Helium-JS/issues)
