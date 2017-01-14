@@ -53,11 +53,14 @@ HE.init(true, true, true);
 // You can selectively enable and disable features
 HE.init(false, false, true);
 // Here we've kept mouse tracking and console logs disabled, but enabled HTML messages
+
+// You can also use shorthand for true/false
+HE.init(1,1,1);
 ```
 
 **Custom Event Based Code**
 ```javascript
-//Custom Events Implementation
+// Custom Events Implementation
 HE.onScroll = function(){console.log('You Scrolled'); };
 HE.onResize = function(){console.log('You Resized'); };
 HE.onMouseMove = function(){console.log('You Moved the Mouse'); };
@@ -66,12 +69,12 @@ HE.onMouseMove = function(){console.log('You Moved the Mouse'); };
 **Detect Retina Displays or Capable Browsers**
 ```javascript
 // Load special features that would break on old browsers
-if (HE.capable) {
+if (HE.detect.capable) {
 	// Your code here, maybe a HTML5 Video or localStorage content
 }
 
 // Detect if user's device is High DPI
-if (HE.retina) {
+if (HE.detect.retina) {
 	// Load retina images
 } else {
 	// Load standard images
@@ -82,24 +85,22 @@ if (HE.retina) {
 Because the Helium variable is a public variable you can refer to it in your code, you can poke and prod and use any of the data collected.
 ```javascript
 console.log(HE); // See everything
-console.log(HE.win); // Browser window data
-console.log(HE.doc); // Document data
+console.log(HE.size); // Browser window and document data
 console.log(HE.mouse); // Mouse movement data
 console.log(HE.scroll); // User scrolling data
 ```
-
 
 ## Code Examples
 **Load Different Images for Small Retina and Non-Retina Screens**
 Let's load content for only smaller devices. Some users have a high DPI device so let's load higher quality images for them.
 ```javascript
-HE.init(); //Start Helium
+HE.init(); // Start Helium
 
 // Is window narrower than 992px?
-if (HE.win.width < 992) {
+if (HE.size.win.x < 992) {
 
 	// Is screen high DPI?
-	if (HE.retina) {
+	if (HE.device.retina) {
 		$('.element').setAttribute('style', 'background-image:url(image_x2.jpg)');
 	} else {
 		$('.element').setAttribute('style', 'background-image:url(image.jpg)');
@@ -110,31 +111,31 @@ if (HE.win.width < 992) {
 **Show an Element After Scrolling 200px Down the Page**
 You can trigger hiding or showing an element anytime the user scrolls, the example below hides an element only for desktop devices where a user has scrolled 200px or more down the page:
 ```javascript
-//Your code here
+// Your code here
 
 HE.init(); //Start Helium
 var toggle = false; // HE.onScroll() runs like a loop so lets prevent code from running endlessly
 
-//Lets attach custom code to run each time the user scrolls
+// Lets attach custom code to run each time the user scrolls
 HE.onScroll = function(){
 	// Is window wider than 992px?
-	if (HE.win.width > 992) {
+	if (HE.size.win.x > 992) {
 
 		// Has user scrolled further than 199 pixels?
-		if (HE.scroll.y.px > 199) {
+		if (HE.scroll.px.y > 199) {
 
-			//Is it already showing?
+			// Is it already showing?
 			if (!toggle) {
-					$('.element').show(); //Show the element
-					toggle = true; //We're using the toggle variable to prevent jQuery from trying to hide the element each time the user scrolls
+					$('.element').show(); // Show the element
+					toggle = true; // We're using the toggle variable to prevent jQuery from trying to hide the element each time the user scrolls
 			}
 
 		} else {
 
-			//Is it already hidden?
+			// Is it already hidden?
 			if (toggle) {
-				$('.element').hide(); //Hide the element
-				toggle = false; //We're using the toggle variable to prevent jQuery from trying to show the element each time the user scrolls
+				$('.element').hide(); // Hide the element
+				toggle = false; // We're using the toggle variable to prevent jQuery from trying to show the element each time the user scrolls
 			}
 
 		}
@@ -147,27 +148,27 @@ The .onScroll function can run hundreds of times per second so it's a good idea 
 **Simple Parallax**
 Helium can help with simple parallax effects without a full blown library.
 ```javascript
-HE.init(); //Start Helium
+HE.init(); // Start Helium
 
-//Code to trigger on every scroll event
+// Code to trigger on every scroll event
 HE.onScroll = function(){
 	// slight blur on movement
-	$('#element1').css("transform":"translate(" + HE.scroll.x.px +"px, " + HE.scroll.x.px + "px)");
-	$('#element2').css("transform":"translate(" + -HE.scroll.x.px +"px, " + -HE.scroll.x.px + "px)");
+	$('#element1').css("transform":"translate(" + HE.scroll.px.x +"px, " + HE.scroll.px.x + "px)");
+	$('#element2').css("transform":"translate(" + -HE.scroll.px.x +"px, " + -HE.scroll.px.x + "px)");
 
-	// worse performance
-	//$('#element1').css("margin":" + HE.scroll.x.px +"px " + HE.scroll.x.px + "px 0 0");
-	//$('#element2').css("margin":" + -HE.scroll.x.px +"px " + -HE.scroll.x.px "px 0 0");
+	// Worse performance
+	// $('#element1').css("margin":" + HE.scroll.px.x +"px " + HE.scroll.px.x + "px 0 0");
+	// $('#element2').css("margin":" + -HE.scroll.px.x +"px " + -HE.scroll.px.x "px 0 0");
 };
 ```
-The .onScroll function can run hundreds of times per second so it's a good idea to be very intentional with your parallax effects. Animating using the Translate property will generally perform better than using margin or padding to move elements but will slightly blur the element. You can also use similar code to move background images using the background-position property. Currently Helium only watches scrolling from the body element, but you could alter the element watched in the source code (on line 256: window.addEventListener("scroll", scrollRequest, true);)
+The .onScroll function can run hundreds of times per second so it's a good idea to be very intentional with your parallax effects. Animating using the Translate property will generally perform better than using margin or padding to move elements but will slightly blur the element. You can also use similar code to move background images using the background-position property. Currently Helium only watches scrolling from the body element, but you could alter the element Helium JS watches in the source code (in the HE.init function).
 
 
 ### Performance Advice
 HE.onResize and HE.onScroll should be treated like loops, everything you trigger should be as lean as possible to keep your frame rates high.
 
 *To reduce lag:*
-- Use the HE.onResize and HE.onScroll variables to *trigger animations instead of animating frame by frame*, unless you're creating parallax effects.
+- *Use variables to trigger animations instead of animating "frame by frame" wherever possible* --unless you're intentionally creating parallax effects.
 - Using variables to determine if your code blocks really need to fire on every iteration.
 - Consider moving code outside of HE.onResize() and HE.onScroll() functions if possible especially if the code only runs once.
 
